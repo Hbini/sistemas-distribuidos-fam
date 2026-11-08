@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.class
+checkpoint.json
+checkpoint.json.tmp
+compartilhada/
+.venv/
+.idea/
+.vscode/

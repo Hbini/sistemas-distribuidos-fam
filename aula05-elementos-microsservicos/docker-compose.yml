@@ -1,0 +1,38 @@
+# Aula 05: loja de lanches em microsserviços (Python + Java).
+# Subir:   docker compose up --build
+# Testar:  python python/cliente_loja.py   (ou abrir http://localhost:8000/api/catalogo/produtos)
+# Parar:   docker compose down
+#
+# Repare que, dentro da rede do Docker, cada serviço acha o outro pelo NOME
+# (catalogo, estoque, pedidos): é o service discovery por DNS do Docker.
+
+services:
+  catalogo:
+    build: { context: ., dockerfile: python.Dockerfile }
+    command: python servico_catalogo.py
+    environment: { PORTA: "8001" }
+
+  estoque:
+    build: { context: ., dockerfile: java.Dockerfile }
+    environment: { PORTA: "8002" }
+
+  pedidos:
+    build: { context: ., dockerfile: python.Dockerfile }
+    command: python servico_pedidos.py
+    environment:
+      PORTA: "8003"
+      CATALOGO_URL: http://catalogo:8001
+      ESTOQUE_URL: http://estoque:8002
+    depends_on: [catalogo, estoque]
+
+  gateway:
+    build: { context: ., dockerfile: python.Dockerfile }
+    command: python api_gateway.py
+    environment:
+      PORTA: "8000"
+      CATALOGO_URL: http://catalogo:8001
+      ESTOQUE_URL: http://estoque:8002
+      PEDIDOS_URL: http://pedidos:8003
+    ports:
+      - "8000:8000"      # somente o gateway fica exposto para fora
+    depends_on: [catalogo, estoque, pedidos]

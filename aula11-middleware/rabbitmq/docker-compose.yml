@@ -1,0 +1,10 @@
+# Aula 11: Middleware Orientado a Mensagens (MOM) real: RabbitMQ.
+# Subir:   docker compose up -d
+# Painel:  http://localhost:15672   (usuário guest, senha guest)
+# Parar:   docker compose down
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"     # protocolo AMQP (aplicações)
+      - "15672:15672"   # painel web de administração
